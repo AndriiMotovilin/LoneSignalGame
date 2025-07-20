@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dcad60cc1d4ae649bf8741bd08eec81, type: 3}
+  m_Name: Keycard
+  m_EditorClassIdentifier: 
+  itemName: Keycard
+  icon: {fileID: 21300000, guid: 448b3f6a0f6b65a47a00bfedc7d35ad5, type: 3}
+  description: 
+  droppedPrefab: {fileID: 3215922145561542124, guid: f98b8a7a2bfd29d4a93524b93b16bbb8, type: 3}
+  isUsable: 0
+  isHealingItem: 0
+  healAmount: 0
+  isKeyCard: 1
+  keyCardID: 1
