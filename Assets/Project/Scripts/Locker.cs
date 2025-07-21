@@ -34,20 +34,10 @@ public class Locker : MonoBehaviour
                 SetItemsPickupState(true);
                 pickupEnabled = true;
             }
-            else if (isOpen && pickupEnabled)
-            {
-                isOpen = false;
-                pickupEnabled = false;
-                SetItemsPickupState(false);
-            }
+
+            // Удалён блок, позволяющий закрытие
         }
 
-        // Безопасная проверка: если дверь закрыта, но предметы всё ещё активны — выключить
-        if (!isOpen && pickupEnabled)
-        {
-            SetItemsPickupState(false);
-            pickupEnabled = false;
-        }
     }
 
     private void OnTriggerEnter(Collider other)

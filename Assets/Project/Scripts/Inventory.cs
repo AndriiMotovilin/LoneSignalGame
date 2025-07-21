@@ -14,6 +14,15 @@ public class Inventory : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
+    public bool CanAddItem()
+    {
+        foreach (var item in items)
+        {
+            if (item == null) return true;
+        }
+        return items.Count < maxSlots;
+    }
+
 
     public void AddItem(PickableItem item)
     {
