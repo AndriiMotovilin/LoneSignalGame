@@ -164,6 +164,7 @@ GameObject:
   - component: {fileID: 1365730359837097450}
   - component: {fileID: 9204394965145666847}
   - component: {fileID: 2253044571735565110}
+  - component: {fileID: 1659509042026499255}
   m_Layer: 5
   m_Name: Icon
   m_TagString: Untagged
@@ -241,5 +242,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 9204394965145666847}
-  index: 0
   selectionHighlight: {fileID: 5363666604279887924}
+  index: 0
+--- !u!225 &1659509042026499255
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6176894555495962244}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

@@ -1,27 +1,60 @@
 ﻿using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerClickHandler
 {
     public Image icon;
-    public int index;
-
     public GameObject selectionHighlight;
+
+    [HideInInspector] public int index;
 
     private Canvas canvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector3 originalPosition;
 
+    private List<PickableItem> itemList;
+    private DualInventoryUI dualUI;
+    private InventoryUI singleUI;
+    private bool isPlayer;
+
     void Awake()
     {
         canvas = GetComponentInParent<Canvas>();
         rectTransform = GetComponent<RectTransform>();
-        canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        canvasGroup = GetComponent<CanvasGroup>() ?? gameObject.AddComponent<CanvasGroup>();
+        SetSelected(false);
+    }
 
-        if (selectionHighlight != null)
-            selectionHighlight.SetActive(false);
+    public void Setup(List<PickableItem> items, int i, DualInventoryUI uiRef, bool fromPlayer)
+    {
+        itemList = items;
+        index = i;
+        dualUI = uiRef;
+        singleUI = null;
+        isPlayer = fromPlayer;
+
+        ApplyVisual();
+    }
+
+    public void Setup(List<PickableItem> items, int i, InventoryUI uiRef)
+    {
+        itemList = items;
+        index = i;
+        singleUI = uiRef;
+        dualUI = null;
+        isPlayer = true;
+
+        ApplyVisual();
+    }
+
+    private void ApplyVisual()
+    {
+        var item = (index < itemList.Count) ? itemList[index] : null;
+        icon.sprite = item != null ? item.icon : null;
+        icon.color = item != null ? Color.white : new Color(1, 1, 1, 0);
     }
 
     public void SetSelected(bool selected)
@@ -30,16 +63,25 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             selectionHighlight.SetActive(selected);
     }
 
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (itemList == null || index < 0 || index >= itemList.Count) return;
+
+        if (dualUI != null)
+            dualUI.SelectItem(itemList, index, isPlayer);
+        else if (singleUI != null)
+            singleUI.SelectItem(index);
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         originalPosition = rectTransform.position;
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 0.6f;
 
-        // Скрыть описание предмета при начале перетаскивания
-        Inventory.Instance.inventoryUI.HideItemDetailPanel();
+        if (dualUI != null) dualUI.HideDetails();
+        if (singleUI != null) singleUI.HideItemDetailPanel();
     }
-
 
     public void OnDrag(PointerEventData eventData)
     {
@@ -55,22 +97,41 @@ public class InventorySlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     public void OnDrop(PointerEventData eventData)
     {
-        var draggedSlot = eventData.pointerDrag?.GetComponent<InventorySlotUI>();
-        if (draggedSlot != null && draggedSlot != this)
+        var dragged = eventData.pointerDrag?.GetComponent<InventorySlotUI>();
+        if (dragged == null || dragged == this) return;
+
+        while (itemList.Count <= index)
+            itemList.Add(null);
+        while (dragged.itemList.Count <= dragged.index)
+            dragged.itemList.Add(null);
+
+        var a = dragged.itemList[dragged.index];
+        var b = itemList[index];
+
+        // Обновляем списки
+        dragged.itemList[dragged.index] = b;
+        itemList[index] = a;
+
+        // 🔁 Синхронизируем с Inventory.Instance, если работаем с его списком
+        if (itemList == Inventory.Instance.items || dragged.itemList == Inventory.Instance.items)
         {
-            Inventory.Instance.SwapItems(index, draggedSlot.index);
+            Inventory.Instance.inventoryUI.Refresh(Inventory.Instance.items);
+        }
+
+        // 🔄 Обновляем Dual UI
+        if (dualUI != null)
+        {
+            dualUI.Refresh();
+            dualUI.HideDetails();
+        }
+        else if (singleUI != null)
+        {
+            singleUI.Refresh(itemList);
+            singleUI.HideItemDetailPanel();
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            Inventory.Instance.inventoryUI.SelectItem(index);
-        }
-    }
 
-    // Метод DropThisItem оставлен для кнопки "Выбросить"
     public void DropThisItem()
     {
         var player = GameObject.FindWithTag("Player");

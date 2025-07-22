@@ -121,6 +121,8 @@ GameObject:
   - component: {fileID: 438694906910610238}
   - component: {fileID: 5594613493471464093}
   - component: {fileID: 3665325346984242920}
+  - component: {fileID: 507267978250587461}
+  - component: {fileID: 6246032760764905805}
   m_Layer: 0
   m_Name: Locker
   m_TagString: Untagged
@@ -236,6 +238,35 @@ MonoBehaviour:
   openRotation: {x: 0, y: -100, z: 0}
   rotationSpeed: 5
   pickupEnableThreshold: 0.99
+--- !u!114 &507267978250587461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2776938586914033225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 744d591c452f75f4584fef3877200730, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerInventory: {fileID: 0}
+  dualInventoryUI: {fileID: 0}
+--- !u!114 &6246032760764905805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2776938586914033225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe9e78f61ea373a44b0e9a724275fab5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items:
+  - {fileID: 11400000, guid: b38ebd312dac7e84c9e7e61d626860a4, type: 2}
+  maxSlots: 10
 --- !u!1 &6092067798079235971
 GameObject:
   m_ObjectHideFlags: 0

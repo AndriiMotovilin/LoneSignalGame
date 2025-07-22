@@ -136,7 +136,8 @@ public class InventoryUI : MonoBehaviour
         {
             var slot = slotUIs[i];
             var icon = slot.icon;
-            slot.index = i;
+            slot.Setup(items, i, this);
+
 
             slot.SetSelected(false); // <-- сброс выделения
 

@@ -26,28 +26,33 @@ public class Inventory : MonoBehaviour
 
     public void AddItem(PickableItem item)
     {
-        // Проверяем наличие свободной (null) ячейки
         for (int i = 0; i < items.Count; i++)
         {
             if (items[i] == null)
             {
                 items[i] = item;
-                inventoryUI.Refresh(items);
+                RefreshUI();
                 return;
             }
         }
 
-        // Если пустых ячеек нет — добавляем в конец, если не превышен лимит
         if (items.Count < maxSlots)
         {
             items.Add(item);
-            inventoryUI.Refresh(items);
+            RefreshUI();
         }
         else
         {
             Debug.LogWarning($"[Inventory] Инвентарь полон. Не удалось добавить {item.name}");
         }
     }
+
+    private void RefreshUI()
+    {
+        if (inventoryUI != null)
+            inventoryUI.Refresh(items);
+    }
+
 
 
     public void SwapItems(int indexA, int indexB)
