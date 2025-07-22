@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class Locker : MonoBehaviour
+public class Locker : MonoBehaviour, IInventoryOpenReceiver
 {
     public Transform doorTransform;
     public Vector3 closedRotation = Vector3.zero;
     public Vector3 openRotation = new Vector3(0, 100f, 0);
     public float rotationSpeed = 5f;
-    public float pickupEnableThreshold = 0.99f; // Порог открытия для активации подбора
+    public float pickupEnableThreshold = 0.99f;
 
     private bool isOpen = false;
     private bool playerNearby = false;
-    private Transform player;
     private bool pickupEnabled = false;
 
     void Update()
@@ -34,28 +33,19 @@ public class Locker : MonoBehaviour
                 SetItemsPickupState(true);
                 pickupEnabled = true;
             }
-
-            // Удалён блок, позволяющий закрытие
         }
-
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             playerNearby = true;
-            player = other.transform;
-        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
-        {
             playerNearby = false;
-            player = null;
-        }
     }
 
     private void SetItemsPickupState(bool allow)
@@ -64,7 +54,7 @@ public class Locker : MonoBehaviour
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
         foreach (var hit in hits)
         {
-            ItemWorld item = hit.GetComponent<ItemWorld>();
+            var item = hit.GetComponent<ItemWorld>();
             if (item != null)
             {
                 item.canBePickedUp = allow;
@@ -72,5 +62,24 @@ public class Locker : MonoBehaviour
                     item.pickupHintUI.SetActive(false);
             }
         }
+    }
+
+    public void OnInventoryOpened()
+    {
+        isOpen = true;
+        pickupEnabled = false;
+        SetItemsPickupState(false);
+    }
+
+    public void OnInventoryClosed()
+    {
+        ForceClose();
+    }
+
+    public void ForceClose()
+    {
+        isOpen = false;
+        pickupEnabled = false;
+        SetItemsPickupState(false);
     }
 }

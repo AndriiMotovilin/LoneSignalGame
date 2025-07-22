@@ -1,22 +1,33 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class ChestTrigger : MonoBehaviour
 {
     public ContainerInventory containerInventory;
     public DualInventoryUI dualInventoryUI;
 
-    void OnTriggerStay(Collider other)
+    private bool playerInside = false;
+
+    void Update()
     {
-        if (other.CompareTag("Player") && Input.GetKeyDown(KeyCode.E))
+        if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
-            dualInventoryUI.Open(containerInventory);
+            var receiver = GetComponent<IInventoryOpenReceiver>();
+            dualInventoryUI.Open(containerInventory, receiver);
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            playerInside = true;
+    }
+
+    private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
+            playerInside = false;
             dualInventoryUI.Close();
         }
     }

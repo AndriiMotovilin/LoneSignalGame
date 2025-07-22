@@ -22,18 +22,27 @@ public class DualInventoryUI : MonoBehaviour
     private int selectedIndex = -1;
     private bool selectedFromPlayer;
 
-    public void Open(ContainerInventory container)
+    private IInventoryOpenReceiver receiver;
+
+    public void Open(ContainerInventory container, IInventoryOpenReceiver linkedReceiver = null)
     {
         currentContainer = container;
+        receiver = linkedReceiver;
+
         panel.SetActive(true);
         Refresh();
         HideDetails();
+
+        receiver?.OnInventoryOpened();
     }
 
     public void Close()
     {
-        currentContainer = null;
         panel.SetActive(false);
+        HideDetails();
+
+        receiver?.OnInventoryClosed();
+        receiver = null;
     }
 
     public void Refresh()
@@ -77,7 +86,6 @@ public class DualInventoryUI : MonoBehaviour
         else
             actionButton.onClick.AddListener(() => TransferToPlayer(index));
 
-        // Обновим подсветку
         Refresh();
     }
 
