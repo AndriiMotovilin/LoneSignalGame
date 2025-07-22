@@ -9,13 +9,15 @@ public class InventoryUI : MonoBehaviour
     public GameObject panel;
     public List<InventorySlotUI> slotUIs;
 
-
     [Header("Item Detail Panel")]
     public GameObject itemDetailPanel;
     public Text detailNameText;
     public Text detailDescriptionText;
     public Button useButton;
     public Button dropButton;
+
+    [Header("UI Coordination")]
+    public DualInventoryUI dualInventoryUI; // <- Добавлено
 
     private bool isVisible = false;
     private int selectedIndex = -1;
@@ -32,9 +34,26 @@ public class InventoryUI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
+            if (dualInventoryUI != null && dualInventoryUI.IsOpen())
+            {
+                Debug.Log("[InventoryUI] Нельзя открыть: DualInventory открыт");
+                return;
+            }
+
             Toggle();
         }
     }
+
+    public void ForceClose()
+    {
+        if (isVisible)
+        {
+            isVisible = false;
+            panel.SetActive(false);
+            HideItemDetailPanel();
+        }
+    }
+
 
     public void Toggle()
     {
@@ -60,14 +79,11 @@ public class InventoryUI : MonoBehaviour
         useButton.gameObject.SetActive(item.isUsable);
         itemDetailPanel.SetActive(true);
 
-        // Подсветка слота
         for (int i = 0; i < slotUIs.Count; i++)
         {
             slotUIs[i].SetSelected(i == index);
         }
     }
-
-
 
     private void UseSelectedItem()
     {
@@ -78,7 +94,6 @@ public class InventoryUI : MonoBehaviour
 
         Debug.Log($"Использован предмет: {item.itemName}");
 
-        // Логика лечения
         if (item.isHealingItem && item.healAmount > 0f)
         {
             var player = GameObject.FindWithTag("Player");
@@ -92,18 +107,14 @@ public class InventoryUI : MonoBehaviour
 
                     if (playerController.healthSlider != null)
                         playerController.healthSlider.value = playerController.currentHealth;
-
-                    Debug.Log($"Здоровье восстановлено на {item.healAmount}. Текущее здоровье: {playerController.currentHealth}");
                 }
             }
         }
 
         Inventory.Instance.items[selectedIndex] = null;
-        Inventory.Instance.inventoryUI.Refresh(Inventory.Instance.items);
+        Refresh(Inventory.Instance.items);
         itemDetailPanel.SetActive(false);
     }
-
-
 
     private void DropSelectedItem()
     {
@@ -121,40 +132,19 @@ public class InventoryUI : MonoBehaviour
     {
         itemDetailPanel.SetActive(false);
 
-        // Также сбросим подсветку слотов
         foreach (var slot in slotUIs)
             slot.SetSelected(false);
 
         selectedIndex = -1;
     }
 
-
     public void Refresh(List<PickableItem> items)
     {
-
         for (int i = 0; i < slotUIs.Count; i++)
         {
             var slot = slotUIs[i];
-            var icon = slot.icon;
             slot.Setup(items, i, this);
-
-
-            slot.SetSelected(false); // <-- сброс выделения
-
-            EventTrigger trigger = icon.GetComponent<EventTrigger>();
-            if (trigger == null) trigger = icon.gameObject.AddComponent<EventTrigger>();
-            trigger.triggers.Clear();
-
-            if (i < items.Count && items[i] != null)
-            {
-                icon.sprite = items[i].icon;
-                icon.color = Color.white;
-            }
-            else
-            {
-                icon.sprite = null;
-                icon.color = new Color(1, 1, 1, 0);
-            }
+            slot.SetSelected(false);
         }
     }
 }

@@ -24,6 +24,11 @@ public class DualInventoryUI : MonoBehaviour
 
     private IInventoryOpenReceiver receiver;
 
+    public bool IsOpen()
+    {
+        return panel != null && panel.activeSelf;
+    }
+
     public void Open(ContainerInventory container, IInventoryOpenReceiver linkedReceiver = null)
     {
         currentContainer = container;
@@ -43,6 +48,14 @@ public class DualInventoryUI : MonoBehaviour
 
         receiver?.OnInventoryClosed();
         receiver = null;
+    }
+
+    void Update()
+    {
+        if (panel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        {
+            Close();
+        }
     }
 
     public void Refresh()

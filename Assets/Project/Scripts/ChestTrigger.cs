@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 public class ChestTrigger : MonoBehaviour
@@ -12,6 +12,14 @@ public class ChestTrigger : MonoBehaviour
     {
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
+            // Закрываем обычный инвентарь, если он открыт
+            var inventoryUI = FindObjectOfType<InventoryUI>();
+            if (inventoryUI != null)
+            {
+                inventoryUI.ForceClose();
+            }
+
+            // Открываем Dual Inventory
             var receiver = GetComponent<IInventoryOpenReceiver>();
             dualInventoryUI.Open(containerInventory, receiver);
         }
